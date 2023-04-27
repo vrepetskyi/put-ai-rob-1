@@ -1,4 +1,4 @@
-FROM vrepetskyi/rob:lab2
+FROM put/rob1:lab2
 
 RUN apt-get install -y ros-noetic-turtlesim ros-noetic-rqt-graph wget
 

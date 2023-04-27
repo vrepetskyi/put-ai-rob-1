@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 XAUTH=/tmp/.docker.xauth
 if [ ! -f $XAUTH ]
@@ -24,5 +24,6 @@ docker run \
     --env "NVIDIA_DRIVER_CAPABILITIES=all" \
     --privileged \
     --network host \
+    --volume "$(pwd)/data:/data:rw" \
     $1 \
     /bin/bash
