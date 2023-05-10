@@ -1,3 +1,5 @@
 source/*/*/
 shared/*/solution/*
+shared/*/materials/*
+!.gitignore
 !.gitkeep
