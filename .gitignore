@@ -1,0 +1,3 @@
+source/*/*/
+shared/*/solution/*
+!.gitkeep
