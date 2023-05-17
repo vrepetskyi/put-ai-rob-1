@@ -12,6 +12,10 @@ First of all, you'll need to build an image for each laboratory class. You can d
 
 ## More on scripts
 
+In Linux, a script needs special permission to be executed. Grant it by typing `chmod +x <path-to-script>`.
+
+To run a script type `<path-to-script> <argument1> <argument2> ... ` and until it isn't an alias, **_remember about ./ if in the script directory and an extension (.sh)_**.
+
 Argument notation:
 
 <table>
@@ -29,14 +33,12 @@ Argument notation:
     </tr>
     <tr>
         <td>{update | upgrade}</td>
-        <td>curly brackets contain mutually exclusive options; pick one</td>
+        <td>curly brackets contain mutually exclusive options - pick one</td>
     </tr>
 </table>
 
-Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias)
+Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias).
 
-To run a script type `./<path-to-script> <argument1> <argument2> ...`; until it isn't an alias, **_remember about ./ and an extension (.sh)_**
-
-_Now go see help for each of the scripts_ (`./<script>.sh -h` from the script directory)
+_Go see help for each of them_ (`./<script>.sh -h` from the script directory)
 
 ## How the build works
