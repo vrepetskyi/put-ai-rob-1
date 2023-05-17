@@ -39,6 +39,6 @@ Argument notation:
 
 Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias).
 
-_Go see help for each of them_ (`./<script>.sh -h` from the script directory)
+_Go see help for each of them_ (`./<script>.sh -h` from the script directory).
 
 ## How the build works
