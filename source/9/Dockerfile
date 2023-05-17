@@ -1,4 +1,4 @@
-FROM put/rob1:base
+FROM put/ai-rob-1:base
 
 RUN git clone -b calibration_devel https://github.com/fmauch/universal_robot /catkin_ws/src/universal_robot
 

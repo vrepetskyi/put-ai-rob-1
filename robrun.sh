@@ -44,7 +44,7 @@ fi
 #                                                               (let your external GPU do the work; additional configuration will probably be required)
 #                                                           --device *device*
 #                                                               (expose a device to the container; configuration (A LOT) is required on WSL)
-#     put/rob1:lab$1 \                                  Run an image under a number you've passed as a first argument;
+#     put/ai-rob-1:lab$1 \                                  Run an image under a number you've passed as a first argument;
 #                                                       you should've built it using ./robbuild.sh *lab number*
 #     /bin/bash                                         Run bash (you don't have to type it at the end)
 
@@ -61,5 +61,5 @@ docker run \
     --env "NVIDIA_VISIBLE_DEVICES=all" \
     --env "NVIDIA_DRIVER_CAPABILITIES=all" \
     ${@:2} \
-    "put/rob1:lab$1" \
+    "put/ai-rob-1:lab$1" \
     /bin/bash
