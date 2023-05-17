@@ -6,6 +6,10 @@ This framework will gently introduce you to Docker in the context of Robotics cl
 
 First of all, you'll need to build an image for each laboratory class. You can do so by using the **_robbuild_** script. You are recommended to work on the assignments inside the **_shared_** directory. The **_robrun_** will automatically mount it to the root of a container making it a _bridge_ between the host OS and the container. The **_robget_** will download the needed **_materials_** and the **_robshare_** will help you move _catkin packages_ and _symlink_ them back. _An example is below..._ 👇
 
+```
+# TODO
+```
+
 ## More on scripts
 
 Argument notation:
@@ -31,8 +35,8 @@ Argument notation:
 
 Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias)
 
-To run a script type `./path-to-script argument1 argument2 ...`; until it isn't an alias, **_remember about ./ and an extension (.sh)_**
+To run a script type `./<path-to-script> <argument1> <argument2> ...`; until it isn't an alias, **_remember about ./ and an extension (.sh)_**
 
-_Now go see help for each of the scripts_ (**_./script.sh -h_** from the script directory)
+_Now go see help for each of the scripts_ (`./<script>.sh -h` from the script directory)
 
 ## How the build works
