@@ -1,5 +1,7 @@
-FROM put/rob1:lab3
+FROM put/rob1:base
 
-RUN apt-get install -y pip ros-noetic-vision-msgs
+RUN apt install -y \
+        ros-noetic-vision-msgs
 
-RUN pip install ultralytics
+RUN pip install \
+        ultralytics
