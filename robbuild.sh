@@ -1,66 +1,77 @@
 #!/bin/bash
 
-# Handle help
-if [[ $# -eq 0 || $1 = 'help' || $1 = '-h' || $1 = '--help' ]]; then
-    echo './robbuild.sh [{<lab-id> | base | help | -h | --help}] [{upgrade | full-upgrade}]'
+if [[ $# -eq 0 ]]; then
+    echo './robbuild.sh base|<lab-id> [upgrade|full-upgrade]'
     echo
-    echo 'Used for building Docker images from the source directory'
+    echo 'Used to build the <lab-id> Docker image from ./source/<lab-id>/'
     echo
-    echo 'upgrade will run the identically named apt command on the existing base image'
-    echo 'full-upgrade will look for a new ROS image and rebuild the base image from scratch'
-    exit 0
+    echo 'Usually called via robrun - see its help'
+    echo
+    echo 'Use this script if you want to update the cached images'
+    echo
+    echo 'The inner workings:'
+    echo '- makes sure the ROS image is pulled'
+    echo '- by default tries to run the corresponding build.sh script'
+    echo '- if build.sh doesn'\''t exist fallbacks to the direct usage of Dockerfiles:'
+    echo '  - first builds the base image'
+    echo '  - then builds the <lab-id> image'
+    echo
+    echo 'Build arguments:'
+    echo '- upgrade runs the identically named apt command on the existing base image'
+    echo '- full-upgrade looks for a new ROS image and rebuilds the base image from scratch'
+    echo
+    echo 'Inside the build.sh you may customize the build proccess beyond Dockerfile capabilities'
+    echo 'Parts of this script'\''s functionality can still be reused there'
+    echo 'All the arguments are passed unchanged'
+    exit
 fi
 
-# Get the script directory
-SCRIPT_PATH="${BASH_SOURCE}"
-while [ -L "${SCRIPT_PATH}" ]; do
-    SCRIPT_DIR="$(cd -P "$(dirname "${SCRIPT_PATH}")" >/dev/null 2>&1 && pwd)"
-    SCRIPT_PATH="$(readlink "${SCRIPT_PATH}")"
-    [[ ${SCRIPT_PATH} != /* ]] && SCRIPT_PATH="${SCRIPT_DIR}/${SCRIPT_PATH}"
+script_path="${BASH_SOURCE[0]}"
+while [ -L "${script_path}" ]; do
+    script_dir="$(cd -P "$(dirname "${script_path}")" >/dev/null 2>&1 && pwd)"
+    script_path="$(readlink "${script_path}")"
+    [[ ${script_path} != /* ]] && script_path="${script_dir}/${script_path}"
 done
-SCRIPT_PATH="$(readlink -f "${SCRIPT_PATH}")"
-SCRIPT_DIR="$(cd -P "$(dirname -- "${SCRIPT_PATH}")" >/dev/null 3>&1 && pwd)"
+script_path="$(readlink -f "${script_path}")"
+script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
-SOURCE_DIR=$SCRIPT_DIR/source
+source_dir=$script_dir/source
 
-# Handle base image
+# Handle the base image
 if [[ $1 = 'base' ]]; then
     # Pull the oficial ROS image
-    if [[ $(docker images -q osrf/ros:noetic-desktop-full 2> /dev/null) == '' || $2 = 'full-upgrade' ]]; then
+    if [[ $(docker images -q osrf/ros:noetic-desktop-full 2>/dev/null) == '' || $2 = 'full-upgrade' ]]; then
         docker pull osrf/ros:noetic-desktop-full
     fi
 
-    # Build/upgrade the laboratories base image
-    BASE_DIR=$SOURCE_DIR/base
+    # Build/upgrade
+    base_dir=$source_dir/base
     if [[ $2 = 'full-upgrade' ]]; then
-        docker build -f $BASE_DIR/build.Dockerfile -t put/ai-rob-1:base --no-cache .
+        docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base --no-cache .
     elif [[ $2 = 'upgrade' ]]; then
-        docker build -f $BASE_DIR/upgrade.Dockerfile -t put/ai-rob-1:base --no-cache .
-    elif [[ $(docker images -q put/ai-rob-1:base 2> /dev/null) == '' ]]; then
-        docker build -f $BASE_DIR/build.Dockerfile -t put/ai-rob-1:base .
+        docker build -f "$base_dir/upgrade.Dockerfile" -t put/ai-rob-1:base --no-cache .
+    elif [[ $(docker images -q put/ai-rob-1:base 2>/dev/null) == '' ]]; then
+        docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base .
     fi
 
-    exit 0
+    exit
 fi
 
-# Handle laboratory image
-LAB_DIR=$SOURCE_DIR/$1
+# Handle particular image build
+lab_dir=$source_dir/$1
 
-# Check if source directory exists
-if [[ ! -d $LAB_DIR ]]; then
-    >&2 echo "Source for laboratory $1 is not found"
+# Check if the source directory exists
+if [[ ! -d $lab_dir ]]; then
+    echo >&2 "Source for laboratory $1 is not found"
     exit 1
 fi
 
-# Try to use custom build script
-if [[ -f $LAB_DIR/build.sh ]]; then
-    # Pass upgrade requests as a first argument
-    $LAB_DIR/build.sh $2
-    exit 0
+if [[ -f $lab_dir/build.sh ]]; then
+    # Try to use custom build script
+    # shellcheck disable="SC2068"
+    "$lab_dir/build.sh" $@
+else
+    # Otherwise fallback to base + extended image
+    $script_path base "$2"
+    docker build "$lab_dir" -t "put/ai-rob-1:$1"
 fi
-
-# Otherwise handle base image
-$SCRIPT_PATH base $2
-
-# And build laboratory's Dockerfile
-docker build $LAB_DIR -t put/ai-rob-1:$1

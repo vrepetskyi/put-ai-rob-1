@@ -1,0 +1,1 @@
+walking_robot.bag https://github.com/MichalNowicki/LabRoboticsI/raw/main/Lab06-ROSTF/walking_robot.bag

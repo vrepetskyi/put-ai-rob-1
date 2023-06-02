@@ -16,7 +16,7 @@ In Linux, a script needs special permission to be executed. Grant it by typing `
 
 To run a script type `<path-to-script> <argument1> <argument2> ... ` and until it isn't an alias, **_remember about ./ if in the script directory and an extension (.sh)_**.
 
-Argument notation:
+One of the argument notations:
 
 <table>
     <tr>
@@ -28,17 +28,17 @@ Argument notation:
         <td>everything inside the square brackets is optional</td>
     </tr>
     <tr>
-        <td>-h/--help</td>
-        <td>dash is usually a prefix for non-positional arguments; double dash is used for long forms</td>
+        <td>-a/-aq/--quiet</td>
+        <td>dash is usually a prefix for non-positional arguments; you may try to combine them; double dash is used for long forms</td>
     </tr>
     <tr>
-        <td>{update | upgrade}</td>
-        <td>curly brackets contain mutually exclusive options - pick one</td>
+        <td>update|upgrade</td>
+        <td>mutually exclusive options are separated by <code>|</code> - pick one</td>
     </tr>
 </table>
 
 Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias).
 
-_Go see help for each of them_ (`./<script>.sh -h` from the script directory).
+_Go see help for each of them_ (`./<script>.sh` without any arguments from the script directory).
 
 ## How the build works
