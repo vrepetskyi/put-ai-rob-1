@@ -32,5 +32,5 @@ RUN source /opt/ros/noetic/setup.bash && \
 
 # Add aliases for the helper scripts
 RUN cd /root && \
-    echo 'alias robget=/shared/robget.sh' >> .bashrc && \
-    echo 'alias robshare=/shared/robshare.sh' >> .bashrc
+    echo 'alias robget=/materials/robget.sh' >> .bashrc && \
+    echo 'alias robshare=/solutions/robshare.sh' >> .bashrc

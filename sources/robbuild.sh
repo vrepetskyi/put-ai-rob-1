@@ -5,7 +5,7 @@ if [[ $# -eq 0 ]]; then
     echo
     echo 'Used to build the <lab-id> Docker image from ./source/<lab-id>/'
     echo
-    echo 'Usually called via robrun - see its help'
+    echo 'Usually called via robcreate - see its help'
     echo
     echo 'Use this script if you want to update the cached images'
     echo
@@ -23,7 +23,7 @@ if [[ $# -eq 0 ]]; then
     echo 'Inside the build.sh you may customize the build proccess beyond Dockerfile capabilities'
     echo 'Parts of this script'\''s functionality can still be reused there'
     echo 'All the arguments are passed unchanged'
-    exit
+    exit 0
 fi
 
 script_path="${BASH_SOURCE[0]}"
@@ -35,17 +35,15 @@ done
 script_path="$(readlink -f "${script_path}")"
 script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
-source_dir=$script_dir/source
-
-# Handle the base image
+# Build the base image on request
 if [[ $1 = 'base' ]]; then
     # Pull the oficial ROS image
     if [[ $(docker images -q osrf/ros:noetic-desktop-full 2>/dev/null) == '' || $2 = 'full-upgrade' ]]; then
         docker pull osrf/ros:noetic-desktop-full
     fi
 
-    # Build/upgrade
-    base_dir=$source_dir/base
+    # Pick an appropriate cache policy
+    base_dir=$script_dir/base
     if [[ $2 = 'full-upgrade' ]]; then
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base --no-cache .
     elif [[ $2 = 'upgrade' ]]; then
@@ -54,24 +52,20 @@ if [[ $1 = 'base' ]]; then
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base .
     fi
 
-    exit
+    exit 0
 fi
 
-# Handle particular image build
-lab_dir=$source_dir/$1
-
-# Check if the source directory exists
-if [[ ! -d $lab_dir ]]; then
-    echo >&2 "Source for laboratory $1 is not found"
-    exit 1
-fi
-
-if [[ -f $lab_dir/build.sh ]]; then
+# Build an image for a particular laboratory
+lab_dir=$script_dir/$1
+if [[ -d "$lab_dir" && -f "$lab_dir/build.sh" ]]; then
     # Try to use custom build script
     # shellcheck disable="SC2068"
     "$lab_dir/build.sh" $@
-else
+elif [[ -f "$lab_dir/Dockerfile" ]]; then
     # Otherwise fallback to base + extended image
     $script_path base "$2"
     docker build "$lab_dir" -t "put/ai-rob-1:$1"
+else
+    echo >&2 "Source for laboratory $1 is not found"
+    exit 1
 fi

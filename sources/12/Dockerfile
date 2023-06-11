@@ -4,12 +4,10 @@ WORKDIR /catkin_ws/src
 
 RUN git clone https://github.com/MichalNowicki/KalmanFilter.git
 
-WORKDIR /catkin_ws
-
 RUN rosdep update
 
-RUN rosdep install --from-paths src --ignore-src -r -y
-
-RUN source /opt/ros/noetic/setup.bash && catkin_make
+RUN rosdep install --from-paths . --ignore-src -r -y
 
 WORKDIR /
+
+RUN cd /catkin_ws && source /opt/ros/noetic/setup.bash && catkin_make

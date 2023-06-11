@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]]; then
-    echo './robstart.sh <lab-id> [--rm] [--gpus] [--device] (<other-options>)'
+    echo './robgo.sh <lab-id> [--rm] [--gpus] [--device] (<other-options>)'
     echo
     echo 'The primary way of running a container. Handles the setup for you'
     echo
@@ -20,8 +20,8 @@ if [[ $# -eq 0 ]]; then
     echo
     echo 'The ones marked with * require configuration for WSL (see README):'
     echo
-    echo 'See robbuild'\''s and robrun'\''s helps for more use cases'
-    exit
+    echo 'See robbuild'\''s and robcreate'\''s helps for more use cases'
+    exit 0
 fi
 
 script_path="${BASH_SOURCE[0]}"
@@ -33,12 +33,19 @@ done
 script_path="$(readlink -f "${script_path}")"
 script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
+sources="$script_dir/sources"
+
+# TODO conditional build
+
+# Try to build the image
+"$sources/robbuild.sh" "$1" || exit 1
+
 # Look for an already started container
-target="$(docker ps --quiet --latest --filter ancestor=put/ai-rob-1:"$1")"
+target="$(docker ps --quiet --latest --filter "ancestor=put/ai-rob-1:$1" --filter "label=lab-id=$1")"
 
 if [[ ! "$target" ]]; then
-    # Look for an already created container
-    target="$(docker ps --all --quiet --latest --filter ancestor=put/ai-rob-1:"$1")"
+    # Look for an already created, but not yet started conatiner
+    target="$(docker ps --all --quiet --latest --filter "ancestor=put/ai-rob-1:$1" --filter "label=lab-id=$1")"
 fi
 
 if [[ $target ]]; then
@@ -48,5 +55,5 @@ if [[ $target ]]; then
 else
     echo "Creating a new container"
     # shellcheck disable="SC2068"
-    "$script_dir/robrun.sh" $@
+    "$sources/robcreate.sh" $@
 fi

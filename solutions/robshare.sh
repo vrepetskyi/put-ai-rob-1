@@ -5,7 +5,7 @@ if [[ $# -ne 1 ]]; then
     echo
     echo 'Helps not to lose the progress on container removal'
     echo
-    echo 'Run this script from a container created with robstart or robrun'
+    echo 'Run this script from a container created with robgo or robcreate'
     echo 'Alias "robshare" is available there'
     echo
     echo 'Moves/restores a file or directory to/from /shared/$LAB_ID/'
@@ -13,7 +13,7 @@ if [[ $# -ne 1 ]]; then
     echo 'e.g. "robshare src/some-catkin-package" will be resolved the following way:'
     echo 'src/some-catkin-package will point to /shared/$LAB_ID/some-catkin-package;'
     echo 'some-catkin-package will be moved there first in case it is not yet shared'
-    exit
+    exit 0
 fi
 
 script_path="${BASH_SOURCE[0]}"
@@ -25,22 +25,34 @@ done
 script_path="$(readlink -f "${script_path}")"
 script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
-lab_folder="$script_dir/$LAB_ID"
-target="${1##*/}"
-shared="$lab_folder/$target"
+# The original path of the target
+source="${1%/}"
+# The target name
+target="${source##*/}"
+# The solution directory
+solution="$script_dir/$LAB_ID"
+# The new path of the target
+shared="$solution/$target"
 
+# TODO: fix symlink is subdir
+
+# Symlink right away if the target is already shared
 if [[ -f "$shared" ]]; then
-    ln -sf "$shared" "$1"
-    echo "Created a symlink from $1 to $shared"
+    ln -sf "$shared" "$source"
+    echo "Created a symlink from $source to $shared"
 elif [[ -d "$shared" ]]; then
-    ln -sf "$shared/" "$1"
-    echo "Created a symlink from $1/ to $shared/"
-elif [[ -f "$1" || -d "$1" ]]; then
-    mv "$1" "$lab_folder/"
-    if [[ -f "$1" ]]; then
-        echo "Moved $1 to $lab_folder/"
+    ln -sf "$shared/" "$source"
+    echo "Created a symlink from $source/ to $shared/"
+# Otherwise, share it first
+elif [[ -f "$source" || -d "$source" ]]; then
+    mkdir -p "$solution"
+    mv "$source" "$solution/"
+    if [[ -f "$shared" ]]; then
+        echo "Moved $source to $solution/"
     else
-        echo "Moved $1/ to $lab_folder/"
+        echo "Moved $source/ to $solution/"
     fi
-    "$script_path" "$1"
+    # TODO empty dir chmod error
+    chmod +777 -R "$solution"
+    "$script_path" "$source"
 fi
