@@ -1,8 +1,21 @@
 # PUT / AI Robotics 1 laboratories
 
-This framework will gently introduce you to Docker in the context of Robotics classes. You're highly encouraged to **_explore all the scripts_** in this repository as **_they are annotated_**. Moreover, this will allow you to add Docker to your toolset. The suggested workflow will be presented next 👇
+## Motivation
 
-## Usage example
+The purpose of this framework is to optimize the work done around Docker in the context of Robotics classes:
+
+- **_reduce redundancy_** - both in routine tasks and memory and network usage
+- **_introduce conventions_**
+
+Moreover, this framework will gently familiarize you with Docker<br />
+You're highly encouraged to _explore all the scripts_ in this repository as _they are annotated_<br />
+This will allow you to _add Docker to your toolset_
+
+The suggested workflow is presented next 👇
+
+## A comprehensive example
+
+Assume you run all the terminals during a single session
 
 Terminal 1:
 
@@ -64,11 +77,9 @@ ls -l
 exit
 ```
 
-Terminal 999:
+## Rare cases
 
 ```bash
-# Some rare use cases
-
 # Run one more independent container for the same laboratory
 
 # The next time robgo will send you to the new container
@@ -94,12 +105,14 @@ Terminal 999:
 ./sources/robbuild.sh 7 full-upgrade
 ```
 
+## Scripts
+
 The list of all available helper scripts provided by this framework:
 
 <table>
     <tr>
         <td>Name</td>
-        <td>Path<td>
+        <td>Path</td>
     </tr>
     <tr>
         <td>robgo</td>
@@ -114,7 +127,7 @@ The list of all available helper scripts provided by this framework:
         <td>./solutions</td>
     </tr>
     <tr>
-        <td>tobrun</td>
+        <td>robrun</td>
         <td>./source</td>
     </tr>
     <tr>
