@@ -3,14 +3,14 @@
 if [[ $# -ne 1 || $1 != 'pick' ]]; then
     echo 'robget pick'
     echo
+    echo 'Meant to serve as the source of truth for getting the materials for each laboratory'
+    echo
     echo 'Promts you with the materials available for download for a particular lab'
     echo 'The selected entry will be downloaded to /materials/$LAB_ID/'
     echo
-    echo 'Meant to serve as the source of truth for getting the materials'
-    echo
     echo 'Run this script from a container created with robgo or robrun'
     echo
-    echo 'Alias "robget" is available'
+    echo 'Alias robget is available'
     exit 0
 fi
 

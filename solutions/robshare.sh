@@ -3,16 +3,16 @@
 if [[ $# -ne 1 ]]; then
     echo 'robshare <target>'
     echo
-    echo 'Helps not to lose the progress on container removal'
+    echo 'Helps to keep your progress after container removal'
     echo
-    echo 'Run this script from a container created with robgo or robrun'
-    echo 'Alias "robshare" is available there'
-    echo
-    echo 'Moves/restores a file or directory to/from /shared/$LAB_ID/'
+    echo 'Moves/restores a file/directory to/from /shared/$LAB_ID/'
     echo
     echo 'e.g. "robshare src/some-catkin-package" will be resolved the following way:'
     echo 'src/some-catkin-package will point to /shared/$LAB_ID/some-catkin-package;'
     echo 'some-catkin-package will be moved there first in case it is not yet shared'
+    echo
+    echo 'Run this script from a container created with robgo or robrun'
+    echo 'Alias robshare is available there'
     exit 0
 fi
 

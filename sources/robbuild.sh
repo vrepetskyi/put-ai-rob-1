@@ -1,28 +1,18 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]]; then
-    echo './robbuild.sh base|<lab-id> [upgrade|full-upgrade]'
+    echo './robbuild.sh <lab-id> [upgrade|full-upgrade]'
     echo
-    echo 'Used to build the <lab-id> Docker image from ./source/<lab-id>/'
+    echo 'Builds an image for the laboratory'
     echo
-    echo 'Usually called via robrun - see its help'
-    echo
-    echo 'Use this script if you want to update the cached images'
-    echo
-    echo 'The inner workings:'
-    echo '- makes sure the ROS image is pulled'
-    echo '- by default tries to run the corresponding build.sh script'
-    echo '- if build.sh doesn'\''t exist fallbacks to the direct usage of Dockerfiles:'
-    echo '  - first builds the base image'
-    echo '  - then builds the <lab-id> image'
-    echo
-    echo 'Build arguments:'
+    echo 'Arguments:'
     echo '- upgrade runs the identically named apt command on the existing base image'
     echo '- full-upgrade looks for a new ROS image and rebuilds the base image from scratch'
     echo
-    echo 'Inside the build.sh you may customize the build proccess beyond Dockerfile capabilities'
-    echo 'Parts of this script'\''s functionality can still be reused there'
-    echo 'All the arguments are passed unchanged'
+    echo 'By default uses a Dockerfile inside the laboratory'\''s source directory'
+    echo
+    echo 'You can define custom build behavior in the build.sh inside of the corresponding source directory'
+    echo 'All the arguments are passed unchanged; this script'\''s functionality can be called from there'
     exit 0
 fi
 

@@ -3,18 +3,17 @@
 if [[ $# -eq 0 ]]; then
     echo './robrun.sh <lab-id> (<docker-run-options>)'
     echo
-    echo 'Used to create new containers'
+    echo 'Creates a new container'
     echo
-    echo 'Usually called via robgo - see its help'
-    echo
-    echo 'Use this script if you want to simultaneously have'
-    echo 'two separate containers based on the same image'
-    echo
-    echo 'The inner workings:'
-    echo '- creates a container from the <lab-id> image'
-    echo '- configures GUI inside the container'
-    echo '- mounts ./shared/ to the container'\''s root (/)'
-    echo '- applies the provided docker run options'
+    echo 'The steps:'
+    echo '- resolves the image ID using aliases'
+    echo '- builds the image'
+    echo '- creates a container'
+    echo '- configures the network, GUI, and GPU inside the container'
+    echo '- mounts ../materials/ and ../solutions/ to the container'\''s root (/)'
+    echo '- labels the container with subject-id and lab-id'
+    echo '- applies the provided options'
+    echo '- runs an interactive Bash from the container'
     exit 0
 fi
 
@@ -72,21 +71,3 @@ docker run \
     "${@:2}" \
     "put/ai-rob-1:$image_id" \
     /bin/bash
-
-# Explanation:
-# docker run \
-#     -it \                                             Run shell in interactive mode (you'll be able to enter the commands eternally)
-#     --privileged \                                    Makes possible to access devices on your PC from the container
-#     --network host \                                  Exposes your network to the container
-#     --volume "$script_dir/shared:/shared:rw"\         Mounts ./shared/ to the container's root (/) so you can transfer files to/from it
-#     --env "DISPLAY=$DISPLAY" \                        Specifies the target display. Most of the time you want it's value to be :0
-#     --env "QT_X11_NO_MITSHM=1" \                      GUI support
-#     --volume "/tmp/.X11-unix:/tmp/.X11-unix:rw" \         ...
-#     --env "XAUTHORITY=$XAUTH" \                           ...
-#     --volume "$XAUTH:$XAUTH" \                            ...
-#     --env "NVIDIA_VISIBLE_DEVICES=all" \              NVIDIA support (the GPUs are not necessary for this course)
-#     --env "NVIDIA_DRIVER_CAPABILITIES=all" \              ...
-#     --env "LAB_ID=$1" \                               Used in the robshare and robget scripts
-#     ${@:2} \                                          Unwrap the arguments you've passed starting from the second one
-#     "$image" \                                        Run the <lab-id> image; you've passed it as the first argument
-#     /bin/bash                                         Run bash (you don't have to type it after the first argument)

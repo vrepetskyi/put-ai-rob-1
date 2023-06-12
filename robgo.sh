@@ -1,26 +1,25 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]]; then
-    echo './robgo.sh <lab-id> [--rm] [--gpus] [--device] (<other-options>)'
+    echo './robgo.sh <lab-id> (<docker-run-options>)'
     echo
-    echo 'The primary way of running a container. Handles the setup for you'
+    echo 'The primary way of connecting to the environment of each laboratory'
     echo
-    echo 'The inner workings:'
-    echo '- builds the <lab-id> image if not yet built'
-    echo '- creates a <lab-id> container if none exist'
-    echo '- starts the latest created <lab-id> container if none is running'
-    echo '- execs an interactive bash on the latest started <lab-id> container'
+    echo 'Automatically performs the setup steps (only if needed):'
+    echo '- image build'
+    echo '- container creation'
+    echo '- container start'
+    echo '- connection to the latest container'
     echo
-    echo 'The provided options are only used if a new container has to be created'
+    echo 'The options are passed to "docker run" on container creation. The most useful are:'
+    echo '--rm                completely removes the container after you close the parent shell'
+    echo '--gpus all        * shares your external GPU with the container'
+    echo '--device          * shares a device with the container'
+    echo '* - requires configuration if you use WSL (see README)'
     echo
-    echo 'They are the same as you would use for docker run:'
-    echo '--rm              completely removes the container after you close the parent shell'
-    echo '--gpus all      * provides the external GPU to the container'\''s disposal'
-    echo '--device        * shares a device with the container'
-    echo
-    echo 'The ones marked with * require configuration for WSL (see README):'
-    echo
-    echo 'See robbuild'\''s and robrun'\''s helps for more use cases'
+    echo 'Direct use of child scripts:'
+    echo '- robbuild to permorm a build without some caching'
+    echo '- robrun to run multiple containers independently'
     exit 0
 fi
 
