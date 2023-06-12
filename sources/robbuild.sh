@@ -38,12 +38,12 @@ if [[ $1 = 'base' ]]; then
     if [[ $2 = 'full-upgrade' ]]; then
         echo 'Rebuilding the base image'
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base --no-cache .
-    elif [[ $2 = 'upgrade' ]]; then
-        echo 'Upgrading the base image'
-        docker build -f "$base_dir/upgrade.Dockerfile" -t put/ai-rob-1:base --no-cache .
     elif [[ $(docker images -q put/ai-rob-1:base 2>/dev/null) == '' ]]; then
         echo 'Building the base image'
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base .
+    elif [[ $2 = 'upgrade' ]]; then
+        echo 'Upgrading the base image'
+        docker build -f "$base_dir/upgrade.Dockerfile" -t put/ai-rob-1:base --no-cache .
     fi
 
     exit 0
