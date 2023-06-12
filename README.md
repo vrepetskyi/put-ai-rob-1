@@ -7,7 +7,7 @@ The purpose of this framework is to optimize the work done around Docker in the 
 - **_reduce redundancy_** - both in routine tasks and memory and network usage
 - **_introduce conventions_**
 
-Moreover, this framework will gently familiarize you with Docker<br />
+Moreover, this framework will make you gently _familiarize youself with Docker_<br />
 You're highly encouraged to _explore all the scripts_ in this repository as _they are annotated_<br />
 This will allow you to _add Docker to your toolset_
 
@@ -21,7 +21,8 @@ Terminal 1:
 
 ```bash
 # Set up and connect to a container for laboratory number 7
-# Because of --rm option it will be removed on exit
+# Because of the --rm option the container will
+# be removed after you exit from the shell
 ./robgo.sh 7 --rm
 
 # Make the ROS running
@@ -31,7 +32,7 @@ roscore
 Terminal 2:
 
 ```bash
-# Connect to the same running container
+# Connect to the same previously run container
 ./robgo.sh 7
 
 # Pick and download a supplementary BAG file
@@ -47,7 +48,7 @@ Terminal 3:
 # Again, connect to the same container
 ./robgo.sh 7
 
-# Go to the source directory of catkin packages
+# Go to the source directory of Catkin packages
 cd /catkin_ws/src
 
 # Create a new package called center-of-shanks
@@ -61,14 +62,13 @@ catkin_create_pkg center-of-shanks std_msgs rospy
 robshare center-of-shanks
 
 # Check whether the package has been moved
-# You will see that it is a symlink to
-# /solutions/7/center-of-shanks now
+# You will see that now it is a symlink
+# to /solutions/7/center-of-shanks
 ls -l
 
 # Later when you want to restore the package
-# you will run the same robshare command,
-# and the center-of-shanks symlink will
-# appear in you current directory
+# run the same command and the center-of-shanks
+# symlink will appear in your current directory
 
 # The robshare script supports complex
 # absolute and relative paths as well
@@ -92,7 +92,7 @@ exit
 # Upgrade the image
 
 # apt update && apt upgrade will be run on the existing base image
-# The laboratory 7 image will be fully rebuilt
+# The image for laboratory 7 will be fully rebuilt
 
 ./sources/robbuild.sh 7 upgrade
 
@@ -190,5 +190,5 @@ Totally not required for these classes, but you can [try it out](https://learn.m
 
 WSL provides a very limited amount of drivers<br />
 Therefore for something like webcam support, you will have to compile a custom [WSL kernel](https://github.com/microsoft/WSL2-Linux-Kernel)<br />
-Also you will need a tool like [usbipd-win](https://github.com/dorssel/usbipd-win) that will handle the control over your device to Linux<br />
+Also, you will need a tool like [usbipd-win](https://github.com/dorssel/usbipd-win) that will handle the control over your device to Linux<br />
 There is a [video](https://www.youtube.com/watch?v=t_YnACEPmrM) covering the whole process
