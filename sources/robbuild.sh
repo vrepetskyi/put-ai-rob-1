@@ -5,7 +5,7 @@ if [[ $# -eq 0 ]]; then
     echo
     echo 'Used to build the <lab-id> Docker image from ./source/<lab-id>/'
     echo
-    echo 'Usually called via robcreate - see its help'
+    echo 'Usually called via robrun - see its help'
     echo
     echo 'Use this script if you want to update the cached images'
     echo
@@ -35,20 +35,24 @@ done
 script_path="$(readlink -f "${script_path}")"
 script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
-# Build the base image on request
 if [[ $1 = 'base' ]]; then
-    # Pull the oficial ROS image
+    # Build the base image on request
     if [[ $(docker images -q osrf/ros:noetic-desktop-full 2>/dev/null) == '' || $2 = 'full-upgrade' ]]; then
+        # Pull the oficial ROS image
+        echo 'Pulling the ROS image'
         docker pull osrf/ros:noetic-desktop-full
     fi
 
     # Pick an appropriate cache policy
     base_dir=$script_dir/base
     if [[ $2 = 'full-upgrade' ]]; then
+        echo 'Rebuilding the base image'
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base --no-cache .
     elif [[ $2 = 'upgrade' ]]; then
+        echo 'Upgrading the base image'
         docker build -f "$base_dir/upgrade.Dockerfile" -t put/ai-rob-1:base --no-cache .
     elif [[ $(docker images -q put/ai-rob-1:base 2>/dev/null) == '' ]]; then
+        echo 'Building the base image'
         docker build -f "$base_dir/build.Dockerfile" -t put/ai-rob-1:base .
     fi
 
@@ -59,13 +63,24 @@ fi
 lab_dir=$script_dir/$1
 if [[ -d "$lab_dir" && -f "$lab_dir/build.sh" ]]; then
     # Try to use custom build script
+    echo "Running the build script with ID $1"
     # shellcheck disable="SC2068"
     "$lab_dir/build.sh" $@
 elif [[ -f "$lab_dir/Dockerfile" ]]; then
-    # Otherwise fallback to base + extended image
+    # Otherwise, build the base image
     $script_path base "$2"
+
+    # And a particular extended image
+    echo "Building the image with ID $1"
     docker build "$lab_dir" -t "put/ai-rob-1:$1"
 else
-    echo >&2 "Source for laboratory $1 is not found"
+    echo >&2 "Source for ID $1 is not found"
+    echo
+    echo >&2 'Available image IDs:'
+    escaped_dir="$(echo "$script_dir" | sed 's/\//\\\//g')"
+    echo "$script_dir"/*/ | sed "s/$escaped_dir//g" | sed 's/\///g'
+    echo
+    echo >&2 'Available alias IDs:'
+    sed 's/ .*//g' <sources/aliases.txt | tr '\n' ' '
     exit 1
 fi

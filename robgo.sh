@@ -20,7 +20,7 @@ if [[ $# -eq 0 ]]; then
     echo
     echo 'The ones marked with * require configuration for WSL (see README):'
     echo
-    echo 'See robbuild'\''s and robcreate'\''s helps for more use cases'
+    echo 'See robbuild'\''s and robrun'\''s helps for more use cases'
     exit 0
 fi
 
@@ -35,25 +35,16 @@ script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
 sources="$script_dir/sources"
 
-# TODO conditional build
-
-# Try to build the image
-"$sources/robbuild.sh" "$1" || exit 1
-
-# Look for an already started container
-target="$(docker ps --quiet --latest --filter "ancestor=put/ai-rob-1:$1" --filter "label=lab-id=$1")"
-
-if [[ ! "$target" ]]; then
-    # Look for an already created, but not yet started conatiner
-    target="$(docker ps --all --quiet --latest --filter "ancestor=put/ai-rob-1:$1" --filter "label=lab-id=$1")"
+# Look for an already existing container
+existing="$(docker container list --filter label=subject-id=put-ai-rob-1 --filter label=lab-id="$1" --latest --quiet)"
+if [[ "$existing" ]]; then
+    docker start "$existing" &>/dev/null
+    name="$(docker container list -all --filter "id=$existing" --format "{{.Names}}")"
+    echo "Connecting to an existing container: $existing ($name)"
+    docker exec -it "$existing" /bin/bash
+    exit 0
 fi
 
-if [[ $target ]]; then
-    name="$(docker ps -af "id=$target" --format "{{.Names}}")"
-    echo "Connecting to an existing container: $target ($name)"
-    docker start "$target" &>/dev/null && docker exec -it "$target" /bin/bash
-else
-    echo "Creating a new container"
-    # shellcheck disable="SC2068"
-    "$sources/robcreate.sh" $@
-fi
+# Run a new container from the target image
+# shellcheck disable="SC2068"
+"$sources/robrun.sh" $@

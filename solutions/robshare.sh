@@ -5,7 +5,7 @@ if [[ $# -ne 1 ]]; then
     echo
     echo 'Helps not to lose the progress on container removal'
     echo
-    echo 'Run this script from a container created with robgo or robcreate'
+    echo 'Run this script from a container created with robgo or robrun'
     echo 'Alias "robshare" is available there'
     echo
     echo 'Moves/restores a file or directory to/from /shared/$LAB_ID/'
@@ -34,17 +34,18 @@ solution="$script_dir/$LAB_ID"
 # The new path of the target
 shared="$solution/$target"
 
-# TODO: fix symlink is subdir
+# Exit if a place is alredy occupied by another file/directory/symlink
+if [[ -f "$source" || -s "$source" ]]; then
+    echo >&2 "Cannot create a symlink as path \"$source\" is already occupied"
+    exit 1
+fi
 
-# Symlink right away if the target is already shared
-if [[ -f "$shared" ]]; then
-    ln -sf "$shared" "$source"
+if [[ -f "$shared" || -d "$shared" ]]; then
+    # Create the symlink right away if the target is already shared
+    ln -s "$shared" "$source"
     echo "Created a symlink from $source to $shared"
-elif [[ -d "$shared" ]]; then
-    ln -sf "$shared/" "$source"
-    echo "Created a symlink from $source/ to $shared/"
-# Otherwise, share it first
 elif [[ -f "$source" || -d "$source" ]]; then
+    # Otherwise, share the target first and then create a symlink
     mkdir -p "$solution"
     mv "$source" "$solution/"
     if [[ -f "$shared" ]]; then
@@ -52,7 +53,10 @@ elif [[ -f "$source" || -d "$source" ]]; then
     else
         echo "Moved $source/ to $solution/"
     fi
-    # TODO empty dir chmod error
     chmod +777 -R "$solution"
     "$script_path" "$source"
+else
+    # Invalid argument. Nothing was found
+    echo >&2 "Neither \"$source\" nor \"$shared\" has been found"
+    exit 1
 fi

@@ -3,13 +3,14 @@
 if [[ $# -ne 1 || $1 != 'pick' ]]; then
     echo 'robget pick'
     echo
-    echo 'Meant as a source of truth for getting the materials'
-    echo
-    echo 'Run this script from a container created with robgo or robcreate'
-    echo 'Alias "robget" is available there'
-    echo
     echo 'Promts you with the materials available for download for a particular lab'
-    echo 'The selected entry will be downloaded to /shared/$LAB_ID/materials/'
+    echo 'The selected entry will be downloaded to /materials/$LAB_ID/'
+    echo
+    echo 'Meant to serve as the source of truth for getting the materials'
+    echo
+    echo 'Run this script from a container created with robgo or robrun'
+    echo
+    echo 'Alias "robget" is available'
     exit 0
 fi
 
@@ -26,7 +27,7 @@ materials="$script_dir/$LAB_ID"
 sources="$materials/lookup.txt"
 
 if [[ ! -f "$sources" ]]; then
-    echo 'No materials available for the laboratory'
+    echo 'There are no materials for the laboratory'
     exit 1
 fi
 
