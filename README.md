@@ -49,8 +49,16 @@ robshare center-of-shanks
 
 # Check whether the package has been moved
 # You will see that it is a symlink to
-# /solutions/7/center-of-shanks/ now
+# /solutions/7/center-of-shanks now
 ls -l
+
+# Later when you want to restore the package
+# you will run the same robshare command,
+# and the center-of-shanks symlink will
+# appear in you current directory
+
+# The robshare script supports complex
+# absolute and relative paths as well
 
 # Finally, you will want to exit the container
 exit
