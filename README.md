@@ -4,11 +4,12 @@
 
 The purpose of this framework is to optimize the work done around Docker in the context of Robotics classes:
 
-- **_reduce redundancy_** - both in routine tasks and memory and network usage
-- **_introduce conventions_**
+- **_reduce redundancy_** both in routine tasks and storage, network usage
+- **_introduce conventions_** via sources, materials, and solutions directories
+- **_preserve observability_** of sources and materials
 
-Moreover, this framework will make you gently _familiarize youself with Docker_<br />
-You're highly encouraged to _explore all the scripts_ in this repository as _they are annotated_<br />
+Moreover, this framework will gently _familiarize you with Docker_<br />
+You're highly encouraged to _explore all the scripts_ in it as _they are annotated_<br />
 This will allow you to _add Docker to your toolset_
 
 The suggested workflow is presented next 👇
