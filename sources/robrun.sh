@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]]; then
-    echo './robcreate.sh <lab-id> (<docker-run-options>)'
+    echo './robrun.sh <lab-id> (<docker-run-options>)'
     echo
     echo 'Used to create new containers'
     echo
@@ -11,7 +11,6 @@ if [[ $# -eq 0 ]]; then
     echo 'two separate containers based on the same image'
     echo
     echo 'The inner workings:'
-    echo '- builds the <lab-id> image if not yet built'
     echo '- creates a container from the <lab-id> image'
     echo '- configures GUI inside the container'
     echo '- mounts ./shared/ to the container'\''s root (/)'
@@ -42,6 +41,38 @@ script_dir="$(cd -P "$(dirname -- "${script_path}")" >/dev/null 3>&1 && pwd)"
 
 parent_dir=$(dirname "$script_dir")
 
+# Lookup the target image id using aliases.txt
+# The format is: "<alias-name> <image-id>"
+lab_id="$1"
+image_id="$(rg "^$1" <"$script_dir/aliases.txt" | cut -d ' ' -f 2)"
+image_id="${image_id:=$1}"
+
+# Check if the target image exists
+if [[ ! "$(docker images --quiet "put/ai-rob-1:$image_id")" ]]; then
+    "$script_dir/robbuild.sh" "$image_id" || exit 1
+fi
+
+echo "Creating a new container"
+docker run \
+    -it \
+    --privileged \
+    --network host \
+    --env "DISPLAY=$DISPLAY" \
+    --env QT_X11_NO_MITSHM=1 \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix:rw \
+    --env "XAUTHORITY=$XAUTH" \
+    --volume "$XAUTH:$XAUTH" \
+    --env NVIDIA_VISIBLE_DEVICES=all \
+    --env NVIDIA_DRIVER_CAPABILITIES=all \
+    --volume "$parent_dir/materials:/materials:rw" \
+    --volume "$parent_dir/solutions:/solutions:rw" \
+    --label subject-id=put-ai-rob-1 \
+    --label "lab-id=$lab_id" \
+    --env "LAB_ID=$lab_id" \
+    "${@:2}" \
+    "put/ai-rob-1:$image_id" \
+    /bin/bash
+
 # Explanation:
 # docker run \
 #     -it \                                             Run shell in interactive mode (you'll be able to enter the commands eternally)
@@ -59,22 +90,3 @@ parent_dir=$(dirname "$script_dir")
 #     ${@:2} \                                          Unwrap the arguments you've passed starting from the second one
 #     "$image" \                                        Run the <lab-id> image; you've passed it as the first argument
 #     /bin/bash                                         Run bash (you don't have to type it after the first argument)
-
-docker run \
-    -it \
-    --privileged \
-    --network host \
-    --volume "$parent_dir/materials:/materials:rw" \
-    --volume "$parent_dir/solutions:/solutions:rw" \
-    --env "DISPLAY=$DISPLAY" \
-    --env "QT_X11_NO_MITSHM=1" \
-    --volume "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    --env "XAUTHORITY=$XAUTH" \
-    --volume "$XAUTH:$XAUTH" \
-    --env "NVIDIA_VISIBLE_DEVICES=all" \
-    --env "NVIDIA_DRIVER_CAPABILITIES=all" \
-    --env "LAB_ID=$1" \
-    --label "lab-id=$1" \
-    "${@:2}" \
-    "put/ai-rob-1:$1" \
-    /bin/bash
