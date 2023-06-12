@@ -34,29 +34,24 @@ solution="$script_dir/$LAB_ID"
 # The new path of the target
 shared="$solution/$target"
 
-# Exit if a place is alredy occupied by another file/directory/symlink
-if [[ -f "$source" || -s "$source" ]]; then
-    echo >&2 "Cannot create a symlink as path \"$source\" is already occupied"
-    exit 1
-fi
-
 if [[ -f "$shared" || -d "$shared" ]]; then
-    # Create the symlink right away if the target is already shared
+    # Try to create the symlink if the target is already shared
+    if [[ -f "$source" || -s "$source" ]]; then
+        # Exit if a place is alredy occupied by another file/directory/symlink
+        echo >&2 "Cannot create a symlink as path $source is already occupied"
+        exit 1
+    fi
     ln -s "$shared" "$source"
     echo "Created a symlink from $source to $shared"
 elif [[ -f "$source" || -d "$source" ]]; then
     # Otherwise, share the target first and then create a symlink
     mkdir -p "$solution"
     mv "$source" "$solution/"
-    if [[ -f "$shared" ]]; then
-        echo "Moved $source to $solution/"
-    else
-        echo "Moved $source/ to $solution/"
-    fi
+    echo "Moved $source to $solution"
     chmod +777 -R "$solution"
     "$script_path" "$source"
 else
     # Invalid argument. Nothing was found
-    echo >&2 "Neither \"$source\" nor \"$shared\" has been found"
+    echo >&2 "Neither $source nor $shared has been found"
     exit 1
 fi
