@@ -166,12 +166,12 @@ Used argument notation (one of the many others):
 
 Make sure you run [the latest WSL version](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)<br />
 You can either choose the default WSL X server or VcxSrv<br />
-The last one is much slower but provides more Windows-like experience:<br />
+The last one is much slower but provides a more Windows-like experience:<br />
 the windows are easier to interact with (moving, snapping, stacking)
 
 ### GPU
 
-Totally not required for this classes, but you can [try it out](https://learn.microsoft.com/en-us/windows/ai/directml/gpu-cuda-in-wsl#get-started-with-nvidia-cuda)
+Totally not required for these classes, but you can [try it out](https://learn.microsoft.com/en-us/windows/ai/directml/gpu-cuda-in-wsl#get-started-with-nvidia-cuda)
 
 ### Devices
 
