@@ -1,46 +1,173 @@
 # PUT / AI Robotics 1 laboratories
 
-This framework will gently introduce you to Docker in the context of Robotics classes. You're highly encouraged to **_explore all the scripts_** in this repo so you can add Docker to your toolset (**_they are annotated!_**). The suggested workflow will be presented next.
+This framework will gently introduce you to Docker in the context of Robotics classes. You're highly encouraged to **_explore all the scripts_** in this repository as **_they are annotated_**. Moreover, this will allow you to add Docker to your toolset. The suggested workflow will be presented next 👇
 
-## Outline
+## Usage example
 
-First of all, you'll need to build an image for each laboratory class. You can do so by using the **_robbuild_** script. You are recommended to work on the assignments inside the **_shared_** directory. The **_robrun_** will automatically mount it to the root of a container making it a _bridge_ between the host OS and the container. The **_robget_** will download the needed **_materials_** and the **_robshare_** will help you move _catkin packages_ and _symlink_ them back. _An example is below..._ 👇
+Terminal 1:
 
+```bash
+# Set up and connect to a container for laboratory number 7
+# Because of --rm option it will be removed on exit
+./robgo.sh 7 --rm
+
+# Make the ROS running
+roscore
 ```
-# TODO
+
+Terminal 2:
+
+```bash
+# Connect to the same running container
+./robgo.sh 7
+
+# Pick and download a supplementary BAG file
+robget pick
+
+# Prepare the downloaded file for playing
+rosbag play /materials/7/walking_robot.bag --clock --pause
 ```
 
-## More on scripts
+Terminal 3:
 
-In Linux, a script needs special permission to be executed. Grant it by typing `chmod +x <path-to-script>`.
+```bash
+# Again, connect to the same container
+./robgo.sh 7
 
-To run a script type `<path-to-script> <argument1> <argument2> ... ` and until it isn't an alias, **_remember about ./ if in the script directory and an extension (.sh)_**.
+# Go to the source directory of catkin packages
+cd /catkin_ws/src
 
-One of the argument notations:
+# Create a new package called center-of-shanks
+catkin_create_pkg center-of-shanks std_msgs rospy
+
+# Both /materials/ and /solutions/ directories
+# are stored outside of the container
+
+# Move the newly created package there so it
+# is not lost when the container is removed
+robshare center-of-shanks
+
+# Check whether the package has been moved
+# You will see that it is a symlink to
+# /solutions/7/center-of-shanks/ now
+ls -l
+
+# Finally, you will want to exit the container
+exit
+```
+
+Terminal 999:
+
+```bash
+# Some rare use cases
+
+# Run one more independent container for the same laboratory
+
+# The next time robgo will send you to the new container
+
+# Until you remove it you will have to
+# operate the previous ones manually
+
+./sources/robrun.sh 7
+
+# Upgrade the image
+
+# apt update && apt upgrade will be run on the existing base image
+# The laboratory 7 image will be fully rebuilt
+
+./sources/robbuild.sh 7 upgrade
+
+# Fully upgrade the image
+
+# The latest ROS image will be pulled
+# The base and laboratory 7 images
+# will be fully rebuilt
+
+./sources/robbuild.sh 7 full-upgrade
+```
+
+The list of all available helper scripts provided by this framework:
 
 <table>
     <tr>
-        <td>&lt;file&gt;</td>
-        <td>angle brackets and their content should be replaced by a respective value</td>
+        <td>Name</td>
+        <td>Path<td>
     </tr>
     <tr>
-        <td>[--shallow-submodules]</td>
-        <td>everything inside the square brackets is optional</td>
+        <td>robgo</td>
+        <td>./</td>
     </tr>
     <tr>
-        <td>-a/-aq/--quiet</td>
-        <td>dash is usually a prefix for non-positional arguments; you may try to combine them; double dash is used for long forms</td>
+        <td>robget</td>
+        <td>./materials</td>
     </tr>
     <tr>
-        <td>update|upgrade</td>
-        <td>mutually exclusive options are separated by <code>|</code> - pick one</td>
+        <td>robshare</td>
+        <td>./solutions</td>
+    </tr>
+    <tr>
+        <td>tobrun</td>
+        <td>./source</td>
+    </tr>
+    <tr>
+        <td>robbuild</td>
+        <td>./source</td>
     </tr>
 </table>
 
-Available scripts: **robbuild**, **robrun**, **robget**, **robshare** (run this one from a container; you can use an identical alias).
+_Go see help for each of them_ (`<path><name>.sh` without any arguments from the repository root directory)
 
-_Go see help for each of them_ (`./<script>.sh` without any arguments from the script directory).
+## More on scripts
+
+In Linux, a script needs special permission to be executed. Grant it by typing `chmod +x <path-to-script>`<br />
+To run a script type `<path-to-script> <argument1> <argument2> ... `<br />
+As long as it is not an alias, **_remember about ./ and .sh_**
+
+Used argument notation (one of the many others):
+
+<table>
+    <tr>
+        <td>Notation</td>
+        <td>Meaning</td>
+    </tr>
+    <tr>
+        <td>&lt;lab-id&gt;</td>
+        <td>To be replaced by a value</td>
+    </tr>
+    <tr>
+        <td>[--rm]</td>
+        <td>Optional</td>
+    </tr>
+    <tr>
+        <td>-a/-aq/--quiet</td>
+        <td>Non-positional; may be combinable; double dash for full forms</td>
+    </tr>
+    <tr>
+        <td>upgrade|full-upgrade</td>
+        <td>Mutually exclusive - pick one</td>
+    </tr>
+    <tr>
+        <td>(&lt;docker-run-options&gt;)</td>
+        <td>Can be repeated multiple times</td>
+    </tr>
+</table>
 
 ## WSL configuration
 
-TODO
+### GUI
+
+Make sure you run [the latest WSL version](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)<br />
+You can either choose the default WSL X server or VcxSrv<br />
+The last one is much slower but provides more Windows-like experience:<br />
+the windows are easier to interact with (moving, snapping, stacking)
+
+### GPU
+
+Totally not required for this classes, but you can [try it out](https://learn.microsoft.com/en-us/windows/ai/directml/gpu-cuda-in-wsl#get-started-with-nvidia-cuda)
+
+### Devices
+
+WSL provides a very limited amount of drivers<br />
+Therefore for something like webcam support, you will have to compile a custom [WSL kernel](https://github.com/microsoft/WSL2-Linux-Kernel)<br />
+Also you will need a tool like [usbipd-win](https://github.com/dorssel/usbipd-win) that will handle the control over your device to Linux<br />
+There is a [video](https://www.youtube.com/watch?v=t_YnACEPmrM) covering the whole process
